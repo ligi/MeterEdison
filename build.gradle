@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.13.1514'
+        classpath 'org.hidetake:gradle-ssh-plugin:1.1.3'
+    }
+}
+
+apply plugin: "kotlin" // or apply plugin: "kotlin2js" if targeting JavaScript
+apply plugin: 'application'
+apply plugin: "org.hidetake.ssh"
+
+mainClassName = "edisonpower.EdisonpowerPackage"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.13.1514'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+}
+
+remotes {
+    edison {
+        host = '192.168.43.145'
+        user = "root"
+        password = "edisonhack"
+    }
+}
+
+task deploy(dependsOn: distTar) << {
+    ssh.run {
+        session(remotes.edison) {
+            put from: 'build/distributions/EdisonPower.tar', into: 'EdisonPower.tar'
+            execute 'tar -xf EdisonPower.tar'
+        }
+    }
+}
