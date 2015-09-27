@@ -12,12 +12,17 @@ val comm = EdiMaxCommunicator(cfg)
 val version = "0.1"
 val logDir = File("logs")
 val ui = EdisonUserInterface()
-
+val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd__HH_mm_ss")
 var i = 0
 var switchedOn = false
+var currentFile: File? = null
 
 fun main(args: Array<String>) {
+
     logDir.mkdirs()
+
+    currentFile = File(logDir, simpleDateFormat.format(Date()) + ".meter")
+
     ui.printLCD("MeterEdison${version}", "to " + cfg.host)
     println("Meter Edison connecting to " + cfg.host)
     poll()
@@ -28,9 +33,10 @@ fun poll() {
     comm.executeCommand(EdiMaxCommands.CMD_GET_POWER, { response ->
         val nowPower = EdiMaxCommands.unwrapNowPower(response.toString())
         println("response:" + nowPower)
-        val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd__HH_mm_ss")
-        val date = Date()
-        println("Date:" + simpleDateFormat.format(date))
+
+        println("Date:" + simpleDateFormat.format(Date()))
+
+        currentFile!!.appendText("" + Date().time + " " + nowPower + "\n")
 
         val switchedOnNew = nowPower!!.toDouble() < 0.1
 
