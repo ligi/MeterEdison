@@ -4,17 +4,21 @@ import org.ligi.plughub.EdiMaxCommands
 import org.ligi.plughub.EdiMaxCommunicator
 import org.ligi.plughub.EdiMaxConfig
 import java.io.File
-import java.lang.Double
+import java.text.SimpleDateFormat
+import java.util.*
 
 val cfg = EdiMaxConfig()
 val comm = EdiMaxCommunicator(cfg)
 val version = "0.1"
 val logDir = File("logs")
+val ui = EdisonUserInterface()
+
 var i = 0
 var switchedOn = false
 
 fun main(args: Array<String>) {
-    printLCD("Meter Edison ${version}", "to " + cfg.host)
+    logDir.mkdirs()
+    ui.printLCD("MeterEdison${version}", "to " + cfg.host)
     println("Meter Edison connecting to " + cfg.host)
     poll()
 }
@@ -24,26 +28,20 @@ fun poll() {
     comm.executeCommand(EdiMaxCommands.CMD_GET_POWER, { response ->
         val nowPower = EdiMaxCommands.unwrapNowPower(response.toString())
         println("response:" + nowPower)
+        val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd__HH_mm_ss")
+        val date = Date()
+        println("Date:" + simpleDateFormat.format(date))
 
-        val switchedOnNew = Double.parseDouble(nowPower) < 0.1
+        val switchedOnNew = nowPower!!.toDouble() < 0.1
 
         if (switchedOn != switchedOnNew) {
-            beep()
+            ui.beep()
             switchedOn = switchedOnNew
         }
-        printLCD(nowPower + "W", "" + i)
+        ui.printLCD(nowPower + "W", "" + i)
         i++
         poll() // loop
 
     })
 }
 
-private fun printLCD(line1: String?, line2: String?) {
-    val runtime = Runtime.getRuntime()
-    runtime.exec("/home/root/bin/rgb-lcd.py 0 0 255 \"${line1}\" \"${line2}\" ")
-}
-
-private fun beep() {
-    val runtime = Runtime.getRuntime()
-    runtime.exec("/home/root/bin/buzzer.py")
-}
