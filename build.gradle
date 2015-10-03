@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.13.1514'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.14.449'
         classpath 'org.hidetake:gradle-ssh-plugin:1.1.3'
     }
 }
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.13.1514'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.14.449'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
 }
 

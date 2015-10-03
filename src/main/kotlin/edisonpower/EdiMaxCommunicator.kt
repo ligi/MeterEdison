@@ -1,7 +1,7 @@
 package org.ligi.plughub
 
 import com.squareup.okhttp.*
-import java.net
+import java.net.Proxy
 
 public class EdiMaxCommunicator (cfg: EdiMaxConfig) {
 
@@ -32,11 +32,11 @@ public class EdiMaxCommunicator (cfg: EdiMaxConfig) {
     }
 
     inner class auth : Authenticator {
-        override fun authenticateProxy(proxy: net.Proxy?, response: Response?): Request? {
+        override fun authenticateProxy(proxy: Proxy?, response: Response?): Request? {
             return null
         }
 
-        override fun authenticate(proxy: net.Proxy?, response: Response?): Request? {
+        override fun authenticate(proxy: Proxy?, response: Response?): Request? {
             val credential = Credentials.basic("admin", cfg.pass);
             return response?.request()?.newBuilder()?.header("Authorization", credential)?.build();
         }
