@@ -25,9 +25,9 @@ dependencies {
 
 remotes {
     edison {
-        host = '192.168.43.145'
+        host = 'edison'
         user = "root"
-        password = "edisonhack"
+        agent = true
     }
 }
 
